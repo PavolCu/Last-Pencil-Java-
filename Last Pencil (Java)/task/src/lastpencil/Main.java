@@ -11,13 +11,23 @@ public class Main {
 
         System.out.println("Who will be the first (John, Jack):");
         String firstPlayer = scanner.nextLine();
+        String secondPlayer = firstPlayer.equals("John") ? "Jack" : "John";
 
-        printPencilAndTurn(numberOfPencils, firstPlayer);
+        String currentPlayer = firstPlayer;
+
+        while (numberOfPencils > 0) {
+            printPencilAndTurn(numberOfPencils, currentPlayer);
+            System.out.println(currentPlayer + "'s turn:");
+            int pencilsToRemove = scanner.nextInt();
+            numberOfPencils -= pencilsToRemove;
+
+            currentPlayer = currentPlayer.equals(firstPlayer) ? secondPlayer : firstPlayer;
+        }
     }
 
-    public static void printPencilAndTurn(int numberOfPencils, String firstPlayer) {
+    public static void printPencilAndTurn(int numberOfPencils, String currentPlayer) {
 
         System.out.println("|".repeat(Math.max(0, numberOfPencils)));
-        System.out.println(firstPlayer + " is going first!");
+
     }
 }
