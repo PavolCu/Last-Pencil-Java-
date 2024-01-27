@@ -1,4 +1,5 @@
 package lastpencil;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -28,23 +29,27 @@ public class Main {
         }
 
         String firstPlayer;
-        String secondPlayer;
+        String secondPlayer = "Jack";
 
-        // This loop is for getting and validating the first player's name from the user
+        // This loop is for getting and validating the first player from the user
         while (true) {
             System.out.println("Who will be the first (John, Jack):");
-            firstPlayer = scanner.nextLine().trim();
-            if (!firstPlayer.equals("John") && !firstPlayer.equals("Jack")) {
+            String input = scanner.nextLine().trim();
+            if (input.equalsIgnoreCase("John")) {
+                firstPlayer = "John";
+                secondPlayer = "Jack";
+                break;
+            } else if (input.equalsIgnoreCase("Jack")) {
+                firstPlayer = "Jack";
+                secondPlayer = "John";
+                break;
+            } else {
                 System.out.println("Choose between 'John' and 'Jack'");
-                continue;
             }
-            secondPlayer = firstPlayer.equals("John") ? "Jack" : "John";
-            break;
         }
 
         // Print the initial state of the game
         printPencil(numberOfPencils);
-        System.out.println(firstPlayer + "'s turn!");
 
         String currentPlayer = firstPlayer;
         String winner;
@@ -55,18 +60,36 @@ public class Main {
 
             // This loop is for getting and validating the number of pencils to remove from the user
             while (!validInput) {
-                String input = scanner.nextLine().trim();
-                try {
-                    pencilsToRemove = Integer.parseInt(input);
-                    if (pencilsToRemove < 1 || pencilsToRemove > 3) {
-                        System.out.println("Possible values: '1', '2' or '3'");
-                    } else if (pencilsToRemove > numberOfPencils) {
-                        System.out.println("Too many pencils were taken");
-                    } else {
-                        validInput = true;
+                if (currentPlayer.equals("Jack")) { // If it's Jack's turn
+                    if (numberOfPencils == 1) { // If only one pencil is left
+                        pencilsToRemove = 1;
+                    } else if (numberOfPencils % 4 == 0) { // If Jack is in a winning position
+                        pencilsToRemove = 3;
+                    } else if (numberOfPencils % 4 == 1) { // If Jack is in a losing position
+                        pencilsToRemove = new Random().nextInt(3) + 1; // Take a random number of pencils
+                    } else if (numberOfPencils % 4 == 2) { // If Jack is in a winning position
+                        pencilsToRemove = 1;
+                    } else if (numberOfPencils % 4 == 3) { // If Jack is in a winning position
+                        pencilsToRemove = 2;
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("Possible values: '1', '2' or '3'");
+                    System.out.println("Jack's turn:");
+                    System.out.println(pencilsToRemove);
+                    validInput = true;
+                } else { // If it's John's turn
+                    System.out.println(currentPlayer + "'s turn!");
+                    String input = scanner.nextLine().trim();
+                    try {
+                        pencilsToRemove = Integer.parseInt(input);
+                        if (pencilsToRemove < 1 || pencilsToRemove > 3) {
+                            System.out.println("Possible values: '1', '2' or '3'");
+                        } else if (pencilsToRemove > numberOfPencils) {
+                            System.out.println("Too many pencils were taken");
+                        } else {
+                            validInput = true;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Possible values: '1', '2' or '3'");
+                    }
                 }
             }
             numberOfPencils -= pencilsToRemove;
@@ -75,7 +98,6 @@ public class Main {
             if (numberOfPencils > 0) {
                 printPencil(numberOfPencils);
                 currentPlayer = currentPlayer.equals(firstPlayer) ? secondPlayer : firstPlayer;
-                System.out.println(currentPlayer + "'s turn!");
             }
         }
         // Check if the game has ended and determine the winner
